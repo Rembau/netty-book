@@ -47,16 +47,11 @@ public class HttpFileServer {
 			@Override
 			protected void initChannel(SocketChannel ch)
 				throws Exception {
-			    ch.pipeline().addLast("http-decoder",
-				    new HttpRequestDecoder());
-			    ch.pipeline().addLast("http-aggregator",
-				    new HttpObjectAggregator(65536));
-			    ch.pipeline().addLast("http-encoder",
-				    new HttpResponseEncoder());
-			    ch.pipeline().addLast("http-chunked",
-				    new ChunkedWriteHandler());
-			    ch.pipeline().addLast("fileServerHandler",
-				    new HttpFileServerHandler(url));
+			    ch.pipeline().addLast("http-decoder", new HttpRequestDecoder());
+			    ch.pipeline().addLast("http-aggregator", new HttpObjectAggregator(65536));
+			    ch.pipeline().addLast("http-encoder", new HttpResponseEncoder());
+			    ch.pipeline().addLast("http-chunked", new ChunkedWriteHandler());
+			    ch.pipeline().addLast("fileServerHandler", new HttpFileServerHandler(url));
 			}
 		    });
 	    ChannelFuture future = b.bind("192.168.1.102", port).sync();
