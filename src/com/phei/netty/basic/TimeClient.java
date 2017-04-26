@@ -16,6 +16,8 @@
 package com.phei.netty.basic;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -23,6 +25,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 
 /**
  * @author lilinfeng
@@ -42,6 +45,8 @@ public class TimeClient {
                         @Override
                         public void initChannel(SocketChannel ch)
                                 throws Exception {
+                            ByteBuf delimiter = Unpooled.copiedBuffer("\n".getBytes());
+                            ch.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
                             ch.pipeline().addLast(new TimeClientHandler());
                         }
                     });
@@ -62,7 +67,7 @@ public class TimeClient {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        int port = 8080;
+        int port = 9080;
         if (args != null && args.length > 0) {
             try {
                 port = Integer.valueOf(args[0]);

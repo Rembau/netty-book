@@ -57,6 +57,7 @@ public class TimeServer {
         @Override
         protected void initChannel(SocketChannel arg0) throws Exception {
             arg0.pipeline().addLast(new TimeServerHandler());
+            arg0.pipeline().addLast(new TimeServerHandlerTwo());
         }
 
     }
@@ -66,7 +67,7 @@ public class TimeServer {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        int port = 8080;
+        int port = 9080;
         if (args != null && args.length > 0) {
             try {
                 port = Integer.valueOf(args[0]);
