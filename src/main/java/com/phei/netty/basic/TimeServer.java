@@ -24,6 +24,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * @author lilinfeng
  * @version 1.0
@@ -31,7 +34,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  */
 public class TimeServer {
 
-    public void bind(int port) throws Exception {
+    public void bind(int... ports) throws Exception {
         // 配置服务端的NIO线程组
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -41,11 +44,16 @@ public class TimeServer {
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 1024)
                     .childHandler(new ChildChannelHandler());
+            List<ChannelFuture> list = new LinkedList<>();
             // 绑定端口，同步等待成功
-            ChannelFuture f = b.bind(port).sync();
+            for (int port : ports) {
+                list.add(b.bind(port).sync());
+            }
 
             // 等待服务端监听端口关闭
-            f.channel().closeFuture().sync();
+            for (ChannelFuture f : list) {
+                f.channel().closeFuture().sync();
+            }
         } finally {
             // 优雅退出，释放线程池资源
             bossGroup.shutdownGracefully();
@@ -75,6 +83,6 @@ public class TimeServer {
                 // 采用默认值
             }
         }
-        new TimeServer().bind(port);
+        new TimeServer().bind(port, 9081);
     }
 }
